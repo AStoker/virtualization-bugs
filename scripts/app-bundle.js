@@ -59,24 +59,24 @@ define('app',['exports', 'aurelia-framework'], function (exports, _aureliaFramew
     return desc;
   }
 
-  var _dec, _desc, _value, _class;
+  var _dec, _dec2, _desc, _value, _class;
 
-  var App = exports.App = (_dec = (0, _aureliaFramework.computedFrom)('filterQuery'), (_class = function () {
+  var App = exports.App = (_dec = (0, _aureliaFramework.computedFrom)('filterQuery'), _dec2 = (0, _aureliaFramework.computedFrom)('filterSortQuery', '_filteredSortedItems'), (_class = function () {
     function App() {
       _classCallCheck(this, App);
 
       this.controlItems = [];
-      this.sortedItems = [];
-      this.sortedItemsWithReplacement = [];
-      this._filteredItems = [];
       for (var i = 0; i < 1000; i++) {
         this.controlItems.push({ index: i, value: 'Test Item: ' + i });
       }
       this.sortedItems = this.controlItems.slice();
       this.sortedItemsWithReplacement = this.controlItems.slice();
+      this.sortedAddedItems = this.controlItems.slice();
       this._filteredItems = this.controlItems.slice();
+      this._filteredSortedItems = this.controlItems.slice();
 
       this.filterQuery = '';
+      this.filterSortQuery = '';
     }
 
     App.prototype.sortDescending = function sortDescending() {
@@ -125,6 +125,60 @@ define('app',['exports', 'aurelia-framework'], function (exports, _aureliaFramew
       this.sortedItemsWithReplacement = newArr;
     };
 
+    App.prototype.sortDescendingWithFilter = function sortDescendingWithFilter() {
+      var newArr = this._filteredSortedItems.slice().sort(function (a, b) {
+        if (a.index > b.index) {
+          return -1;
+        } else if (a.index < b.index) {
+          return 1;
+        }
+        return 0;
+      });
+      this._filteredSortedItems = newArr;
+    };
+
+    App.prototype.sortAscendingWithFilter = function sortAscendingWithFilter() {
+      var newArr = this._filteredSortedItems.slice().sort(function (a, b) {
+        if (a.index < b.index) {
+          return -1;
+        } else if (a.index > b.index) {
+          return 1;
+        }
+        return 0;
+      });
+      this._filteredSortedItems = newArr;
+    };
+
+    App.prototype.sortDescendingWhenAdding = function sortDescendingWhenAdding() {
+      var newArr = this.sortedAddedItems.slice().sort(function (a, b) {
+        if (a.index > b.index) {
+          return -1;
+        } else if (a.index < b.index) {
+          return 1;
+        }
+        return 0;
+      });
+      this.sortedAddedItems = newArr;
+    };
+
+    App.prototype.sortAscendingWhenAdding = function sortAscendingWhenAdding() {
+      var newArr = this.sortedAddedItems.slice().sort(function (a, b) {
+        if (a.index < b.index) {
+          return -1;
+        } else if (a.index > b.index) {
+          return 1;
+        }
+        return 0;
+      });
+      this.sortedAddedItems = newArr;
+    };
+
+    App.prototype.addToTopOfSortedAddedItems = function addToTopOfSortedAddedItems() {
+      for (var i = 10; i >= 0; i--) {
+        this.sortedAddedItems.unshift({ index: i, value: 'Test Item B: ' + i });
+      }
+    };
+
     _createClass(App, [{
       key: 'filteredItems',
       get: function get() {
@@ -134,10 +188,19 @@ define('app',['exports', 'aurelia-framework'], function (exports, _aureliaFramew
           return item.value.toLowerCase().indexOf(_this.filterQuery.toLowerCase()) > -1;
         });
       }
+    }, {
+      key: 'filteredSortedItems',
+      get: function get() {
+        var _this2 = this;
+
+        return this._filteredSortedItems.filter(function (item) {
+          return item.value.toLowerCase().indexOf(_this2.filterSortQuery.toLowerCase()) > -1;
+        });
+      }
     }]);
 
     return App;
-  }(), (_applyDecoratedDescriptor(_class.prototype, 'filteredItems', [_dec], Object.getOwnPropertyDescriptor(_class.prototype, 'filteredItems'), _class.prototype)), _class));
+  }(), (_applyDecoratedDescriptor(_class.prototype, 'filteredItems', [_dec], Object.getOwnPropertyDescriptor(_class.prototype, 'filteredItems'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'filteredSortedItems', [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, 'filteredSortedItems'), _class.prototype)), _class));
 });
 define('environment',["exports"], function (exports) {
   "use strict";
@@ -192,5 +255,5 @@ define('resources/index',["exports"], function (exports) {
   function configure(config) {}
 });
 define('text!app.css', ['module'], function(module) { module.exports = ".scroll-container {\n    border: 1px solid black;\n    width: 400px;\n}\n.scroll-container > .even {\n    background-color: rgb(208, 223, 255);\n}"; });
-define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from='./app.css'></require>\n  <h1>Virtualization Bug Examples</h1>\n\n  <section>\n    <h3>Control</h3>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of controlItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Sorting</h3>\n    <p>(Broken period)</p>\n    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>\n    <button click.trigger=\"sortDescending()\">Sort Descending</button>\n    <button click.trigger=\"sortAscending()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of sortedItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Sorting By Replacing Array</h3>\n    <p>(Broken when scrolled too far down)</p>\n    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>\n    <button click.trigger=\"sortDescendingByReplacing()\">Sort Descending</button>\n    <button click.trigger=\"sortAscendingByReplacing()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of sortedItemsWithReplacement\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Filtering</h3>\n    <p></p>\n    <input placeholder=\"filter\" value.bind=\"filterQuery\" />\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of filteredItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n</template>\n"; });
+define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from='./app.css'></require>\n  <h1>Virtualization Bug Examples</h1>\n\n  <section>\n    <h3>Control</h3>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of controlItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Sorting</h3>\n    <p>(Broken period)</p>\n    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>\n    <button click.trigger=\"sortDescending()\">Sort Descending</button>\n    <button click.trigger=\"sortAscending()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of sortedItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Sorting By Replacing Array</h3>\n    <p>(Broken when scrolled too far down)</p>\n    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>\n    <button click.trigger=\"sortDescendingByReplacing()\">Sort Descending</button>\n    <button click.trigger=\"sortAscendingByReplacing()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of sortedItemsWithReplacement\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Sorting and Adding To Top</h3>\n    <p>(Broken)</p>\n    <button click.trigger=\"addToTopOfSortedAddedItems()\">Add To Top</button>\n    <button click.trigger=\"sortDescendingWhenAdding()\">Sort Descending</button>\n    <button click.trigger=\"sortAscendingWhenAdding()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of sortedAddedItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Filtering</h3>\n    <p></p>\n    <input placeholder=\"filter\" value.bind=\"filterQuery\" />\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of filteredItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <h3>Filtering &amp; Sorting</h3>\n    <p></p>\n    <input placeholder=\"filter\" value.bind=\"filterSortQuery\" />\n    <button click.trigger=\"sortDescendingWithFilter()\">Sort Descending</button>\n    <button click.trigger=\"sortAscendingWithFilter()\">Sort Ascending</button>\n    <div class=\"scroll-container\" style=\"height: 200px; overflow: auto\">\n      <div class=\"${item.index % 2 === 0 ? 'even' : ''}\" virtual-repeat.for=\"item of filteredSortedItems\">\n        ${$index} ${item.value}\n      </div>\n    </div>\n  </section>\n\n</template>\n"; });
 //# sourceMappingURL=app-bundle.js.map

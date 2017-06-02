@@ -38,11 +38,37 @@
   </section>
 
   <section>
+    <h3>Sorting and Adding To Top</h3>
+    <p>(Broken)</p>
+    <button click.trigger="addToTopOfSortedAddedItems()">Add To Top</button>
+    <button click.trigger="sortDescendingWhenAdding()">Sort Descending</button>
+    <button click.trigger="sortAscendingWhenAdding()">Sort Ascending</button>
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of sortedAddedItems">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
+  <section>
     <h3>Filtering</h3>
     <p></p>
     <input placeholder="filter" value.bind="filterQuery" />
     <div class="scroll-container" style="height: 200px; overflow: auto">
       <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of filteredItems">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Filtering &amp; Sorting</h3>
+    <p></p>
+    <input placeholder="filter" value.bind="filterSortQuery" />
+    <button click.trigger="sortDescendingWithFilter()">Sort Descending</button>
+    <button click.trigger="sortAscendingWithFilter()">Sort Ascending</button>
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of filteredSortedItems">
         ${$index} ${item.value}
       </div>
     </div>
