@@ -3,7 +3,9 @@ import environment from './environment';
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
-    .feature('resources');
+    .feature('resources')
+    .plugin('aurelia-ui-virtualization'); // Add this line to load the plugin
+
 
   if (environment.debug) {
     aurelia.use.developmentLogging();

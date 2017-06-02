@@ -1,3 +1,51 @@
 <template>
-  <h1>${message}</h1>
+  <require from='./app.css'></require>
+  <h1>Virtualization Bug Examples</h1>
+
+  <section>
+    <h3>Control</h3>
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of controlItems">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Sorting</h3>
+    <p>(Broken period)</p>
+    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>
+    <button click.trigger="sortDescending()">Sort Descending</button>
+    <button click.trigger="sortAscending()">Sort Ascending</button>
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of sortedItems">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Sorting By Replacing Array</h3>
+    <p>(Broken when scrolled too far down)</p>
+    <p>When scrolled down the list, and a sort takes place, the list does not resume its previous location and items don't appear currectly</p>
+    <button click.trigger="sortDescendingByReplacing()">Sort Descending</button>
+    <button click.trigger="sortAscendingByReplacing()">Sort Ascending</button>
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of sortedItemsWithReplacement">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Filtering</h3>
+    <p></p>
+    <input placeholder="filter" value.bind="filterQuery" />
+    <div class="scroll-container" style="height: 200px; overflow: auto">
+      <div class="${item.index % 2 === 0 ? 'even' : ''}" virtual-repeat.for="item of filteredItems">
+        ${$index} ${item.value}
+      </div>
+    </div>
+  </section>
+
 </template>
