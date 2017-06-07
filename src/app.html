@@ -44,6 +44,8 @@
   <section>
     <h3>Sorting and Adding To Top</h3>
     <p>(Broken)</p>
+    <p>Looks like when the items are added to the top, the buffer is added, but the bound items remain the same. 
+      So the viewed items now appear lower on the view than they should be (in relation to how many items were added to the top)</p>
     <button click.trigger="addToTopOfSortedAddedItems()">Add To Top</button>
     <button click.trigger="sortDescendingWhenAdding()">Sort Descending</button>
     <button click.trigger="sortAscendingWhenAdding()">Sort Ascending</button>
@@ -68,6 +70,8 @@
   <section>
     <h3>Filtering &amp; Sorting</h3>
     <p>(Broken)</p>
+    <p>Could be something to do with how many items are rebound when sorting. If the view is expecting 40 items, and only 20 are viewed at a time, when you sort, if you have less than 40, you get stuck numbers.
+      Additionally, could be that because you're scrolled down, it's thinking you're farther down the height than you are, causing the bound elements to be blank since they don't match (but if you scroll up, you'll see those elements start to appear).</p>
     <input placeholder="filter" value.bind="filterSortQuery" />
     <button click.trigger="sortDescendingWithFilter()">Sort Descending</button>
     <button click.trigger="sortAscendingWithFilter()">Sort Ascending</button>
